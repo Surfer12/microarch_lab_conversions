@@ -52,25 +52,16 @@ class LearningState:
         if not self.time_to_solve or not self.error_rates:
             return
 
-        # For the first data point, check if it meets increase criteria
-        if len(self.time_to_solve) == 1:
-            solving_time = self.time_to_solve[0]
-            error_rate = self.error_rates[0]
-
-            if solving_time < 30 and error_rate < 0.1:
-                self._increase_difficulty()
-            return
-
-        # For subsequent data points, use average-based approach
-        avg_solving_time = sum(self.time_to_solve) / len(self.time_to_solve)
-        avg_error_rate = sum(self.error_rates) / len(self.error_rates)
+        # Get the most recent performance metrics
+        current_solving_time = self.time_to_solve[-1]
+        current_error_rate = self.error_rates[-1]
 
         # Cognitive complexity heuristics
-        if avg_solving_time < 30 and avg_error_rate < 0.1:
+        if current_solving_time < 30 and current_error_rate < 0.1:
             self._increase_difficulty()
-        elif avg_solving_time > 120 or avg_error_rate > 0.3:
-            # Use decrease_difficulty instead of directly setting to BEGINNER
-            self._decrease_difficulty()
+        elif current_solving_time > 120 or current_error_rate > 0.3:
+            # For poor performance, always return to BEGINNER
+            self.difficulty_level = DifficultyLevel.BEGINNER
             # Clear performance metrics to start fresh
             self.time_to_solve.clear()
             self.error_rates.clear()
