@@ -7,10 +7,11 @@ from educational.learning_pathways import (
     AdaptiveLearningPathway,
     DifficultyLevel
 )
+from learning_pathways import LearningPathways
 
 def main():
     parser = argparse.ArgumentParser(
-        description="CLI for the Adaptive Learning Pathway"
+        description="Learning Pathways CLI"
     )
     subparsers = parser.add_subparsers(
         title='commands',
@@ -61,11 +62,31 @@ def main():
         help='View the current learning state'
     )
 
+    # Add the 'create' command
+    create_parser = subparsers.add_parser("create", help="Create a new learning pathway")
+    create_parser.add_argument("name", help="Name of the learning pathway")
+    create_parser.add_argument("--description", help="Description of the learning pathway")
+
+    # Add the 'list' command
+    list_parser = subparsers.add_parser("list", help="List available learning pathways")
+
+    # Add the 'view' command
+    view_parser = subparsers.add_parser("view", help="View details of a learning pathway")
+    view_parser.add_argument("name", help="Name of the learning pathway to view")
+
+    # Add the 'edit' command
+    edit_parser = subparsers.add_parser("edit", help="Edit an existing learning pathway")
+    edit_parser.add_argument("name", help="Name of the learning pathway to edit")
+    edit_parser.add_argument("--new-name", help="New name for the learning pathway")
+    edit_parser.add_argument("--description", help="New description for the learning pathway")
+
     args = parser.parse_args()
 
     # Initialize learning state
     learning_state = LearningState()
     learning_pathway = AdaptiveLearningPathway(initial_state=learning_state)
+
+    pathways = LearningPathways()
 
     # -----------------------------
     # Route command logic
@@ -105,6 +126,29 @@ def main():
         print(f"Difficulty Level        : {learning_state.difficulty_level.name}")
         print(f"Completed Challenges    : {len(learning_state.completed_challenges)}")
         # Add more details as needed
+
+    elif args.command == "create":
+        pathways.create_learning_pathway(args.name, args.description)
+        print(f"Learning pathway '{args.name}' created successfully.")
+    elif args.command == "list":
+        pathway_names = pathways.list_learning_pathways()
+        if pathway_names:
+            print("Available learning pathways:")
+            for name in pathway_names:
+                print(f"- {name}")
+        else:
+            print("No learning pathways found.")
+    elif args.command == "view":
+        pathway = pathways.get_learning_pathway(args.name)
+        if pathway:
+            print(f"Name: {pathway['name']}")
+            if pathway.get('description'):  # Check if description exists
+                print(f"Description: {pathway['description']}")
+        else:
+            print(f"Learning pathway '{args.name}' not found.")
+    elif args.command == "edit":
+        pathways.edit_learning_pathway(args.name, args.new_name, args.description)
+        print(f"Learning pathway '{args.name}' updated successfully.")
 
     else:
         # If no valid command is provided
