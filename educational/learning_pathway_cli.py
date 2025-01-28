@@ -79,6 +79,10 @@ def main():
     edit_parser.add_argument("--new-name", help="New name for the learning pathway")
     edit_parser.add_argument("--description", help="New description for the learning pathway")
 
+    # Add the 'delete' command
+    delete_parser = subparsers.add_parser("delete", help="Delete a learning pathway")
+    delete_parser.add_argument("name", help="Name of the learning pathway to delete")
+
     args = parser.parse_args()
 
     # Initialize learning state
@@ -129,8 +133,11 @@ def main():
         # Add more details as needed
 
     elif args.command == "create":
-        pathways.create_learning_pathway(args.name, args.description)
-        print(f"Learning pathway '{args.name}' created successfully.")
+        result = pathways.create_learning_pathway(args.name, args.description)
+        if result:
+            print(f"Learning pathway '{args.name}' created successfully.")
+        else:
+            print(f"Error: Could not create learning pathway '{args.name}'.")
     elif args.command == "list":
         pathway_names = pathways.list_learning_pathways()
         if pathway_names:
@@ -145,12 +152,19 @@ def main():
             print(f"Name: {pathway.name}")
             if pathway.description:
                 print(f"Description: {pathway.description}")
+            print(f"Progress: {pathway.progress}%")
         else:
             print(f"Learning pathway '{args.name}' not found.")
     elif args.command == "edit":
         result = pathways.edit_learning_pathway(args.name, args.new_name, args.description)
         if result:
             print(f"Learning pathway '{args.name}' updated successfully.")
+        else:
+            print(f"Error: Learning pathway '{args.name}' not found or new name already exists.")
+    elif args.command == "delete":
+        result = pathways.delete_learning_pathway(args.name)
+        if result:
+            print(f"Learning pathway '{args.name}' deleted successfully.")
         else:
             print(f"Error: Learning pathway '{args.name}' not found.")
 

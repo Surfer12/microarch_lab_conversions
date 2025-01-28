@@ -5,6 +5,7 @@ import random
 import math
 import json
 import os
+import sqlite3
 
 class DifficultyLevel(Enum):
     """
@@ -234,43 +235,79 @@ class AdaptiveLearningPathway:
 class LearningPathway:
     name: str
     description: Optional[str] = None
+    progress: float = 0.0  # Progress percentage
 
 class LearningPathways:
-    DATA_FILE = 'learning_pathways.json'
+    DB_FILE = 'learning_pathways.db'
 
     def __init__(self):
-        self.pathways: List[LearningPathway] = []
-        self.load_data()
+        self.connection = sqlite3.connect(self.DB_FILE)
+        self._create_table()
 
-    def load_data(self):
-        if os.path.exists(self.DATA_FILE):
-            with open(self.DATA_FILE, 'r') as f:
-                data = json.load(f)
-                self.pathways = [LearningPathway(**item) for item in data]
-
-    def save_data(self):
-        with open(self.DATA_FILE, 'w') as f:
-            json.dump([pathway.__dict__ for pathway in self.pathways], f, indent=4)
+    def _create_table(self):
+        with self.connection:
+            self.connection.execute('''
+                CREATE TABLE IF NOT EXISTS pathways (
+                    name TEXT PRIMARY KEY,
+                    description TEXT
+                )
+            ''')
 
     def create_learning_pathway(self, name: str, description: Optional[str] = None):
-        pathway = LearningPathway(name=name, description=description)
-        self.pathways.append(pathway)
-        self.save_data()
+        try:
+            with self.connection:
+                self.connection.execute(
+                    'INSERT INTO pathways (name, description) VALUES (?, ?)',
+                    (name, description)
+                )
+            print(f"Learning pathway '{name}' created successfully.")
+            return True
+        except sqlite3.IntegrityError:
+            print(f"Error: A learning pathway named '{name}' already exists.")
+            return False
 
     def list_learning_pathways(self) -> List[str]:
-        return [pathway.name for pathway in self.pathways]
+        with self.connection:
+            cursor = self.connection.cursor()
+            cursor.execute("SELECT name FROM pathways")
+            rows = cursor.fetchall()
+            return [row[0] for row in rows]
 
     def get_learning_pathway(self, name: str) -> Optional[LearningPathway]:
-        for pathway in self.pathways:
-            if pathway.name == name:
-                return pathway
-        return None
+        with self.connection:
+            cursor = self.connection.cursor()
+            cursor.execute("SELECT name, description FROM pathways WHERE name = ?", (name,))
+            row = cursor.fetchone()
+            if row:
+                return LearningPathway(name=row[0], description=row[1])
+            else:
+                return None
 
     def edit_learning_pathway(self, name: str, new_name: Optional[str] = None, description: Optional[str] = None):
         pathway = self.get_learning_pathway(name)
         if pathway:
             if new_name:
+                # Check if new name already exists
+                if self.get_learning_pathway(new_name):
+                    print(f"Error: A learning pathway named '{new_name}' already exists.")
+                    return False
                 pathway.name = new_name
-            if description:
+            if description is not None:
                 pathway.description = description
-            self.save_data()
+            with self.connection:
+                self.connection.execute(
+                    'UPDATE pathways SET name = ?, description = ? WHERE name = ?',
+                    (new_name, description, name)
+                )
+            return True
+        else:
+            return False
+
+    def delete_learning_pathway(self, name: str) -> bool:
+        pathway = self.get_learning_pathway(name)
+        if pathway:
+            with self.connection:
+                self.connection.execute('DELETE FROM pathways WHERE name = ?', (name,))
+            return True
+        else:
+            return False

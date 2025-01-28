@@ -102,5 +102,16 @@ class TestLearningPathways(unittest.TestCase):
         self.assertIsNotNone(pathway)
         self.assertEqual(pathway.description, "New Description")
 
+    def test_delete_learning_pathway(self):
+        self.pathways.create_learning_pathway("Pathway to Delete")
+        result = self.pathways.delete_learning_pathway("Pathway to Delete")
+        self.assertTrue(result)
+        self.assertIsNone(self.pathways.get_learning_pathway("Pathway to Delete"))
+
+    def test_create_duplicate_learning_pathway(self):
+        self.pathways.create_learning_pathway("Duplicate Pathway")
+        result = self.pathways.create_learning_pathway("Duplicate Pathway")
+        self.assertFalse(result)
+
 if __name__ == '__main__':
     unittest.main()
