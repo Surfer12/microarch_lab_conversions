@@ -5,7 +5,7 @@ import os
 # Add the parent directory to the Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from educational.learning_pathways import LearningState, AdaptiveLearningPathway, DifficultyLevel
+from educational.learning_pathways import LearningState, AdaptiveLearningPathway, DifficultyLevel, LearningPathways
 from core.conversion_engine import convert_number
 
 class TestAdaptiveLearningPathway(unittest.TestCase):
@@ -70,6 +70,37 @@ class TestAdaptiveLearningPathway(unittest.TestCase):
                 self.assertEqual(self.pathway.learning_state.difficulty_level, expected_level)
             else:
                 self.assertEqual(self.pathway.learning_state.difficulty_level, DifficultyLevel.EXPERT)
+
+class TestLearningPathways(unittest.TestCase):
+    def setUp(self):
+        # Initialize a fresh instance and clear data
+        self.pathways = LearningPathways()
+        self.pathways.pathways = []
+        self.pathways.save_data()
+
+    def test_create_learning_pathway(self):
+        self.pathways.create_learning_pathway("Pathway 1", "Description 1")
+        self.assertEqual(len(self.pathways.pathways), 1)
+        self.assertEqual(self.pathways.pathways[0].name, "Pathway 1")
+
+    def test_list_learning_pathways(self):
+        self.pathways.create_learning_pathway("Pathway 1")
+        self.pathways.create_learning_pathway("Pathway 2")
+        pathways_list = self.pathways.list_learning_pathways()
+        self.assertEqual(pathways_list, ["Pathway 1", "Pathway 2"])
+
+    def test_get_learning_pathway(self):
+        self.pathways.create_learning_pathway("Pathway 1", "Description 1")
+        pathway = self.pathways.get_learning_pathway("Pathway 1")
+        self.assertIsNotNone(pathway)
+        self.assertEqual(pathway.description, "Description 1")
+
+    def test_edit_learning_pathway(self):
+        self.pathways.create_learning_pathway("Old Name", "Old Description")
+        self.pathways.edit_learning_pathway("Old Name", new_name="New Name", description="New Description")
+        pathway = self.pathways.get_learning_pathway("New Name")
+        self.assertIsNotNone(pathway)
+        self.assertEqual(pathway.description, "New Description")
 
 if __name__ == '__main__':
     unittest.main()

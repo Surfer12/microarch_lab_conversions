@@ -142,14 +142,17 @@ def main():
     elif args.command == "view":
         pathway = pathways.get_learning_pathway(args.name)
         if pathway:
-            print(f"Name: {pathway['name']}")
-            if pathway.get('description'):  # Check if description exists
-                print(f"Description: {pathway['description']}")
+            print(f"Name: {pathway.name}")
+            if pathway.description:
+                print(f"Description: {pathway.description}")
         else:
             print(f"Learning pathway '{args.name}' not found.")
     elif args.command == "edit":
-        pathways.edit_learning_pathway(args.name, args.new_name, args.description)
-        print(f"Learning pathway '{args.name}' updated successfully.")
+        result = pathways.edit_learning_pathway(args.name, args.new_name, args.description)
+        if result:
+            print(f"Learning pathway '{args.name}' updated successfully.")
+        else:
+            print(f"Error: Learning pathway '{args.name}' not found.")
 
     else:
         # If no valid command is provided

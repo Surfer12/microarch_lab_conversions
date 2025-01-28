@@ -3,6 +3,8 @@ from dataclasses import dataclass, field
 from enum import Enum, auto
 import random
 import math
+import json
+import os
 
 class DifficultyLevel(Enum):
     """
@@ -228,27 +230,47 @@ class AdaptiveLearningPathway:
         # Update learning state based on performance
         self.learning_state.update_profile(result)
 
+@dataclass
+class LearningPathway:
+    name: str
+    description: Optional[str] = None
+
 class LearningPathways:
+    DATA_FILE = 'learning_pathways.json'
+
     def __init__(self):
-        # In-memory storage for learning pathways (for now)
-        self.pathways = {}
+        self.pathways: List[LearningPathway] = []
+        self.load_data()
+
+    def load_data(self):
+        if os.path.exists(self.DATA_FILE):
+            with open(self.DATA_FILE, 'r') as f:
+                data = json.load(f)
+                self.pathways = [LearningPathway(**item) for item in data]
+
+    def save_data(self):
+        with open(self.DATA_FILE, 'w') as f:
+            json.dump([pathway.__dict__ for pathway in self.pathways], f, indent=4)
 
     def create_learning_pathway(self, name: str, description: Optional[str] = None):
-        if name in self.pathways:
-            raise ValueError(f"Learning pathway with name '{name}' already exists.")
-        self.pathways[name] = {"name": name, "description": description}
-
-    def get_learning_pathway(self, name: str) -> Optional[Dict]:
-        return self.pathways.get(name)
+        pathway = LearningPathway(name=name, description=description)
+        self.pathways.append(pathway)
+        self.save_data()
 
     def list_learning_pathways(self) -> List[str]:
-        return list(self.pathways.keys())
+        return [pathway.name for pathway in self.pathways]
+
+    def get_learning_pathway(self, name: str) -> Optional[LearningPathway]:
+        for pathway in self.pathways:
+            if pathway.name == name:
+                return pathway
+        return None
 
     def edit_learning_pathway(self, name: str, new_name: Optional[str] = None, description: Optional[str] = None):
-        if name not in self.pathways:
-            raise ValueError(f"Learning pathway with name '{name}' not found.")
-        if new_name:
-            self.pathways[new_name] = self.pathways.pop(name) # Rename pathway
-            self.pathways[new_name]["name"] = new_name # Update name in data
-        if description is not None: # Allow description to be cleared by passing None
-            self.pathways[new_name or name]["description"] = description
+        pathway = self.get_learning_pathway(name)
+        if pathway:
+            if new_name:
+                pathway.name = new_name
+            if description:
+                pathway.description = description
+            self.save_data()
