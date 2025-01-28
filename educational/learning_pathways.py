@@ -90,6 +90,20 @@ class LearningState:
             DifficultyLevel.BEGINNER
         )
 
+    def to_dict(self):
+        return {
+            'difficulty_level': self.difficulty_level.name,
+            'completed_challenges': self.completed_challenges,
+            # Include other relevant attributes if needed
+        }
+
+    @classmethod
+    def from_dict(cls, data):
+        difficulty_level = DifficultyLevel[data['difficulty_level'].upper()]
+        completed_challenges = data['completed_challenges']
+        # Initialize other attributes as needed
+        return cls(difficulty_level=difficulty_level, completed_challenges=completed_challenges)
+
 class AdaptiveLearningPathway:
     """
     Generates adaptive, personalized learning challenges for number system conversions.
