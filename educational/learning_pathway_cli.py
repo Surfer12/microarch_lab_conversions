@@ -44,7 +44,7 @@ def main():
         '--error-rate',
         type=float,
         required=True,
-        help='Error rate (0.0 to 1.0)'
+        help='Difficulty level for the challenge (e.g., beginner, intermediate, advanced, expert)'
     )
     submit_parser.add_argument(
         '--challenge-level',
