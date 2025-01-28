@@ -6,47 +6,70 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from educational.learning_pathways import LearningState, AdaptiveLearningPathway, DifficultyLevel
+from core.conversion_engine import convert_number
 
-class TestLearningPathways(unittest.TestCase):
+class TestAdaptiveLearningPathway(unittest.TestCase):
+
     def setUp(self):
-        self.learning_state = LearningState()
-        self.learning_pathway = AdaptiveLearningPathway(initial_state=self.learning_state)
+        self.pathway = AdaptiveLearningPathway()
 
-    def test_initialization(self):
-        # Test default initialization
-        self.assertEqual(self.learning_state.difficulty_level, DifficultyLevel.BEGINNER)
-        self.assertEqual(len(self.learning_state.completed_challenges), 0)
-
-    def test_difficulty_adjustment(self):
-        # Simulate challenge results to test difficulty adjustment
-        print("\nInitial difficulty:", self.learning_state.difficulty_level)
-
-        self.learning_state.update_profile({'solving_time': 20, 'error_rate': 0.05})
-        print("After good performance:", self.learning_state.difficulty_level)
-        self.assertEqual(self.learning_state.difficulty_level, DifficultyLevel.INTERMEDIATE)
-
-        self.learning_state.update_profile({'solving_time': 130, 'error_rate': 0.35})
-        print("After poor performance:", self.learning_state.difficulty_level)
-        self.assertEqual(self.learning_state.difficulty_level, DifficultyLevel.BEGINNER)
+    def test_initial_state(self):
+        self.assertEqual(self.pathway.learning_state.difficulty_level, DifficultyLevel.BEGINNER)
+        self.assertEqual(len(self.pathway.learning_state.completed_challenges), 0)
 
     def test_generate_challenge(self):
-        # Test challenge generation
-        challenge = self.learning_pathway.generate_challenge()
+        challenge = self.pathway.generate_challenge()
         self.assertIn('source_base', challenge)
         self.assertIn('target_base', challenge)
         self.assertIn('value', challenge)
         self.assertIn('difficulty_level', challenge)
+        self.assertIn('cognitive_complexity', challenge)
 
-    def test_submit_challenge_result(self):
-        # Test submitting a challenge result
-        challenge = self.learning_pathway.generate_challenge()
-        result = {
-            'solving_time': 50,
-            'error_rate': 0.1,
-            'challenge': challenge
-        }
-        self.learning_pathway.submit_challenge_result(result)
-        self.assertEqual(len(self.learning_state.completed_challenges), 1)
+    def test_evaluate_correct_answer(self):
+        challenge = self.pathway.generate_challenge()
+        correct_answer = convert_number(
+            challenge['value'],
+            challenge['source_base'],
+            challenge['target_base']
+        )
+        user_answer = str(correct_answer)
+        result = self.pathway.evaluate_answer(challenge, user_answer)
+        self.assertTrue(result['is_correct'])
+        self.assertEqual(result['error_rate'], 0)
+
+    def test_evaluate_incorrect_answer(self):
+        challenge = self.pathway.generate_challenge()
+        user_answer = "incorrect_answer"
+        result = self.pathway.evaluate_answer(challenge, user_answer)
+        self.assertFalse(result['is_correct'])
+        self.assertEqual(result['error_rate'], 1)
+
+    def test_submit_challenge_result_increases_difficulty(self):
+        # Simulate correct answers to increase difficulty
+        for _ in range(3):
+            challenge = self.pathway.generate_challenge()
+            correct_answer = convert_number(
+                challenge['value'],
+                challenge['source_base'],
+                challenge['target_base']
+            )
+            result = {
+                'challenge': challenge,
+                'is_correct': True,
+                'solving_time': 25.0,  # Fast solving time
+                'error_rate': 0.0,
+                'user_answer': str(correct_answer),
+                'correct_answer': correct_answer
+            }
+            initial_level = self.pathway.learning_state.difficulty_level
+            self.pathway.submit_challenge_result(result)
+            if initial_level != DifficultyLevel.EXPERT:
+                expected_level = DifficultyLevel(
+                    list(DifficultyLevel)[list(DifficultyLevel).index(initial_level) + 1]
+                )
+                self.assertEqual(self.pathway.learning_state.difficulty_level, expected_level)
+            else:
+                self.assertEqual(self.pathway.learning_state.difficulty_level, DifficultyLevel.EXPERT)
 
 if __name__ == '__main__':
     unittest.main()
