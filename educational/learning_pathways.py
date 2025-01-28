@@ -230,4 +230,4 @@ class AdaptiveLearningPathway:
 
 # Make sure this class is defined in this file
 class LearningPathways:
-    # ... your class definition ...
+    pass
