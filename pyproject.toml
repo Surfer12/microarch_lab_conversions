@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "microarch_lab_conversions"  # Replace with your actual project name
+version = "0.1.0"  # Your project's version
+authors = [
+  { name="Your Name", email="your.email@example.com" },
+]
+description = "A short description of your project"
+readme = "README.md"  # Or README.txt, etc.
+requires-python = ">=3.7"  # Specify your minimum Python version
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",  # Or your chosen license
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/yourusername/yourproject"  # Optional
+"Bug Tracker" = "https://github.com/yourusername/yourproject/issues" # Optional
+
+[project.scripts]
+learning-pathway-cli = "educational.learning_pathway_cli:main" # Entry point for your CLI
+
+[tool.setuptools.packages.find]
+where = ["."] # Or specify directories if your packages aren't at the root
+
+[tool.black] # Optional: code formatter configuration
+line-length = 88
+target-version = ['py37']
+
+[tool.isort] # Optional: import sorter configuration
+profile = "black"

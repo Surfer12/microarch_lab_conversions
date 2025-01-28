@@ -1,13 +1,12 @@
 import argparse
 import sys
 
-# Import your existing classes
+# Use absolute imports
 from educational.learning_pathways import (
     LearningState,
     AdaptiveLearningPathway,
-    DifficultyLevel
+    DifficultyLevel,
 )
-from learning_pathways import LearningPathways
 
 def main():
     parser = argparse.ArgumentParser(
@@ -86,6 +85,8 @@ def main():
     learning_state = LearningState()
     learning_pathway = AdaptiveLearningPathway(initial_state=learning_state)
 
+    # Import LearningPathways here
+    from educational.learning_pathways import LearningPathways
     pathways = LearningPathways()
 
     # -----------------------------

@@ -54,6 +54,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/dill-0.3.7-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/distro-1.9.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/dnspython-2.7.0-pyhff2d567_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/editables-0.5-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/email-validator-2.2.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/email_validator-2.2.0-hd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/exceptiongroup-1.2.2-pyhd8ed1ab_1.conda
@@ -70,6 +71,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/googleapis-common-protos-1.66.0-pyhff2d567_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/h11-0.14.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/h2-4.1.0-pyhd8ed1ab_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/hatchling-1.27.0-pypyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/hpack-4.1.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/httpcore-1.0.7-pyh29332c3_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/httptools-0.6.4-py312hea69d52_0.conda
@@ -174,6 +176,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/pixi-0.40.3-h4dcb070_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/platformdirs-4.3.6-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pluggy-1.5.0-pyhd8ed1ab_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/poetry-core-2.0.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/prometheus-cpp-1.3.0-h0967b3e_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/prometheus_client-0.21.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/propcache-0.2.1-py312h998013c_1.conda
@@ -223,10 +226,12 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/starlette-0.45.3-pyha770c72_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/tk-8.6.13-h5083fa2_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/tokenizers-0.21.0-py312hf3e4074_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/tomli-2.2.1-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/tornado-6.4.2-py312hea69d52_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/tqdm-4.67.1-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/traitlets-5.14.3-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/transformers-4.48.1-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/trove-classifiers-2025.1.15.22-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/truststore-0.10.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/typer-0.15.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/typer-slim-0.15.1-pyhd8ed1ab_0.conda
@@ -699,8 +704,6 @@ packages:
   - conda-env >=2.6
   - conda-build >=24.3
   - conda-content-trust >=0.1.1
-  arch: arm64
-  platform: osx
   license: BSD-3-Clause
   license_family: BSD
   size: 1178908
@@ -817,6 +820,15 @@ packages:
   license_family: OTHER
   size: 172172
   timestamp: 1733256829961
+- conda: https://conda.anaconda.org/conda-forge/noarch/editables-0.5-pyhd8ed1ab_1.conda
+  sha256: 8d4f908e670be360617d418c328213bc46e7100154c3742db085148141712f60
+  md5: 2cf824fe702d88e641eec9f9f653e170
+  depends:
+  - python >=3.9
+  license: MIT
+  license_family: MIT
+  size: 10828
+  timestamp: 1733208220327
 - conda: https://conda.anaconda.org/conda-forge/noarch/email-validator-2.2.0-pyhd8ed1ab_1.conda
   sha256: b91a19eb78edfc2dbb36de9a67f74ee2416f1b5273dd7327abe53f2dbf864736
   md5: da16dd3b0b71339060cd44cb7110ddf9
@@ -986,6 +998,23 @@ packages:
   license_family: MIT
   size: 52000
   timestamp: 1733298867359
+- conda: https://conda.anaconda.org/conda-forge/noarch/hatchling-1.27.0-pypyhd8ed1ab_0.conda
+  sha256: e83420f81390535774ac33b83d05249b8993e5376b76b4d461f83a77549e493d
+  md5: b85c18ba6e927ae0da3fde426c893cc8
+  depends:
+  - editables >=0.3
+  - importlib-metadata
+  - packaging >=21.3
+  - pathspec >=0.10.1
+  - pluggy >=1.0.0
+  - python >=3.7
+  - python >=3.8
+  - tomli >=1.2.2
+  - trove-classifiers
+  license: MIT
+  license_family: MIT
+  size: 56598
+  timestamp: 1734311718682
 - conda: https://conda.anaconda.org/conda-forge/noarch/hpack-4.1.0-pyhd8ed1ab_0.conda
   sha256: 6ad78a180576c706aabeb5b4c8ceb97c0cb25f1e112d76495bff23e3779948ba
   md5: 0a802cb9888dd14eeefc611f05c40b6e
@@ -2242,8 +2271,6 @@ packages:
   - __osx >=11.0
   constrains:
   - __osx >=11.0
-  arch: arm64
-  platform: osx
   license: BSD-3-Clause
   license_family: BSD
   size: 16410111
@@ -2266,6 +2293,15 @@ packages:
   license_family: MIT
   size: 23595
   timestamp: 1733222855563
+- conda: https://conda.anaconda.org/conda-forge/noarch/poetry-core-2.0.1-pyhd8ed1ab_0.conda
+  sha256: 67fccdfc9141ecb84df7ed73f4efcc24ad233be7a118ac8fbe34e611b2f7d7f3
+  md5: e71d8e3f7b5744b1b30978c7bd631d70
+  depends:
+  - python >=3.9,<4.0.0
+  license: MIT
+  license_family: MIT
+  size: 242166
+  timestamp: 1736675172865
 - conda: https://conda.anaconda.org/conda-forge/osx-arm64/prometheus-cpp-1.3.0-h0967b3e_0.conda
   sha256: 851a77ae1a8e90db9b9f3c4466abea7afb52713c3d98ceb0d37ba6ff27df2eff
   md5: 7172339b49c94275ba42fec3eaeda34f
@@ -2827,6 +2863,15 @@ packages:
   license_family: APACHE
   size: 1931389
   timestamp: 1732734727624
+- conda: https://conda.anaconda.org/conda-forge/noarch/tomli-2.2.1-pyhd8ed1ab_1.conda
+  sha256: 18636339a79656962723077df9a56c0ac7b8a864329eb8f847ee3d38495b863e
+  md5: ac944244f1fed2eb49bae07193ae8215
+  depends:
+  - python >=3.9
+  license: MIT
+  license_family: MIT
+  size: 19167
+  timestamp: 1733256819729
 - conda: https://conda.anaconda.org/conda-forge/osx-arm64/tornado-6.4.2-py312hea69d52_0.conda
   sha256: 964a2705a36c50040c967b18b45b9cc8de3c2aff4af546979a574e0b38e58e39
   md5: fb0605888a475d6a380ae1d1a819d976
@@ -2877,6 +2922,15 @@ packages:
   license_family: APACHE
   size: 3405362
   timestamp: 1737429408302
+- conda: https://conda.anaconda.org/conda-forge/noarch/trove-classifiers-2025.1.15.22-pyhd8ed1ab_0.conda
+  sha256: 4d5b3cebc751b4579eb8c6757a8eb3adac7ee9b146297674bf9958560c2c4fa8
+  md5: 246846b15ba47e8684a7c88ce1de3e82
+  depends:
+  - python >=3.9
+  license: Apache-2.0
+  license_family: Apache
+  size: 18583
+  timestamp: 1737019814735
 - conda: https://conda.anaconda.org/conda-forge/noarch/truststore-0.10.0-pyhd8ed1ab_0.conda
   sha256: 0d23d3b370fc0393d05468fbff5152826317d4495446f6b2cc4d446e21050808
   md5: ad1c20cd193e3044bcf17798c33b9d67
@@ -2968,8 +3022,6 @@ packages:
   - libcxx >=18
   constrains:
   - __osx >=11.0
-  arch: arm64
-  platform: osx
   license: Apache-2.0 OR MIT
   size: 9950241
   timestamp: 1737753390464
