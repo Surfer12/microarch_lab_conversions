@@ -48,10 +48,20 @@ class LearningState:
         """
         Dynamically adjust difficulty based on cognitive performance.
         """
-        # Ensure we have at least a few data points before adjusting
-        if len(self.time_to_solve) < 2 or len(self.error_rates) < 2:
+        # If no data points, do nothing
+        if not self.time_to_solve or not self.error_rates:
             return
 
+        # For the first data point, check if it meets increase criteria
+        if len(self.time_to_solve) == 1:
+            solving_time = self.time_to_solve[0]
+            error_rate = self.error_rates[0]
+
+            if solving_time < 30 and error_rate < 0.1:
+                self._increase_difficulty()
+            return
+
+        # For subsequent data points, use average-based approach
         avg_solving_time = sum(self.time_to_solve) / len(self.time_to_solve)
         avg_error_rate = sum(self.error_rates) / len(self.error_rates)
 
@@ -59,8 +69,8 @@ class LearningState:
         if avg_solving_time < 30 and avg_error_rate < 0.1:
             self._increase_difficulty()
         elif avg_solving_time > 120 or avg_error_rate > 0.3:
-            # Explicitly reset to BEGINNER if performance is poor
-            self.difficulty_level = DifficultyLevel.BEGINNER
+            # Use decrease_difficulty instead of directly setting to BEGINNER
+            self._decrease_difficulty()
             # Clear performance metrics to start fresh
             self.time_to_solve.clear()
             self.error_rates.clear()

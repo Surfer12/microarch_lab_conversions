@@ -1,5 +1,11 @@
 import unittest
-from .learning_pathways import LearningState, AdaptiveLearningPathway, DifficultyLevel
+import sys
+import os
+
+# Add the parent directory to the Python path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from educational.learning_pathways import LearningState, AdaptiveLearningPathway, DifficultyLevel
 
 class TestLearningPathways(unittest.TestCase):
     def setUp(self):
@@ -13,10 +19,14 @@ class TestLearningPathways(unittest.TestCase):
 
     def test_difficulty_adjustment(self):
         # Simulate challenge results to test difficulty adjustment
+        print("\nInitial difficulty:", self.learning_state.difficulty_level)
+
         self.learning_state.update_profile({'solving_time': 20, 'error_rate': 0.05})
+        print("After good performance:", self.learning_state.difficulty_level)
         self.assertEqual(self.learning_state.difficulty_level, DifficultyLevel.INTERMEDIATE)
 
         self.learning_state.update_profile({'solving_time': 130, 'error_rate': 0.35})
+        print("After poor performance:", self.learning_state.difficulty_level)
         self.assertEqual(self.learning_state.difficulty_level, DifficultyLevel.BEGINNER)
 
     def test_generate_challenge(self):
