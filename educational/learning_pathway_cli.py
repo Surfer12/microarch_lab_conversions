@@ -1,5 +1,8 @@
 import argparse
 import sys
+import logging
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Use absolute imports
 from educational.learning_pathways import (
@@ -64,20 +67,20 @@ def main():
     # Add the 'create' command
     create_parser = subparsers.add_parser("create", help="Create a new learning pathway")
     create_parser.add_argument("name", help="Name of the learning pathway")
-    create_parser.add_argument("--description", help="Description of the learning pathway")
+    create_parser.add_argument("--description", help="Description of the learning pathway", default=None, nargs='?')
 
     # Add the 'list' command
-    list_parser = subparsers.add_parser("list", help="List available learning pathways")
+    list_parser = subparsers.add_parser("list", help="List all learning pathways")
 
     # Add the 'view' command
-    view_parser = subparsers.add_parser("view", help="View details of a learning pathway")
+    view_parser = subparsers.add_parser("view", help="View a learning pathway")
     view_parser.add_argument("name", help="Name of the learning pathway to view")
 
     # Add the 'edit' command
-    edit_parser = subparsers.add_parser("edit", help="Edit an existing learning pathway")
+    edit_parser = subparsers.add_parser("edit", help="Edit a learning pathway")
     edit_parser.add_argument("name", help="Name of the learning pathway to edit")
     edit_parser.add_argument("--new-name", help="New name for the learning pathway")
-    edit_parser.add_argument("--description", help="New description for the learning pathway")
+    edit_parser.add_argument("--description", help="New description for the learning pathway", default=None, nargs='?')
 
     # Add the 'delete' command
     delete_parser = subparsers.add_parser("delete", help="Delete a learning pathway")

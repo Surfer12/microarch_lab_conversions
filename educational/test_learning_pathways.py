@@ -96,11 +96,13 @@ class TestLearningPathways(unittest.TestCase):
         self.assertEqual(pathway.description, "Description 1")
 
     def test_edit_learning_pathway(self):
-        self.pathways.create_learning_pathway("Old Name", "Old Description")
-        self.pathways.edit_learning_pathway("Old Name", new_name="New Name", description="New Description")
-        pathway = self.pathways.get_learning_pathway("New Name")
+        self.pathways.create_learning_pathway("Pathway to Edit", "Original description")
+        self.pathways.edit_learning_pathway("Pathway to Edit", new_name="Edited Pathway", description="New description")
+        pathway = self.pathways.get_learning_pathway("Edited Pathway")
         self.assertIsNotNone(pathway)
-        self.assertEqual(pathway.description, "New Description")
+        self.assertEqual(pathway.name, "Edited Pathway")
+        self.assertEqual(pathway.description, "New description")
+        self.assertIsNone(self.pathways.get_learning_pathway("Pathway to Edit")) # old name should not exist
 
     def test_delete_learning_pathway(self):
         self.pathways.create_learning_pathway("Pathway to Delete")
@@ -108,10 +110,24 @@ class TestLearningPathways(unittest.TestCase):
         self.assertTrue(result)
         self.assertIsNone(self.pathways.get_learning_pathway("Pathway to Delete"))
 
+    def test_delete_nonexistent_learning_pathway(self):
+        result = self.pathways.delete_learning_pathway("Nonexistent Pathway")
+        self.assertFalse(result)
+
     def test_create_duplicate_learning_pathway(self):
         self.pathways.create_learning_pathway("Duplicate Pathway")
         result = self.pathways.create_learning_pathway("Duplicate Pathway")
         self.assertFalse(result)
+
+    def test_edit_to_duplicate_name_learning_pathway(self):
+        self.pathways.create_learning_pathway("Pathway One")
+        self.pathways.create_learning_pathway("Pathway Two")
+        result = self.pathways.edit_learning_pathway("Pathway One", new_name="Pathway Two")
+        self.assertFalse(result)
+        pathway_one = self.pathways.get_learning_pathway("Pathway One")
+        pathway_two = self.pathways.get_learning_pathway("Pathway Two")
+        self.assertIsNotNone(pathway_one) # Pathway One should still exist
+        self.assertIsNotNone(pathway_two) # Pathway Two should still exist and unchanged
 
 if __name__ == '__main__':
     unittest.main()

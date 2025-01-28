@@ -6,6 +6,9 @@ import math
 import json
 import os
 import sqlite3
+import logging
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 class DifficultyLevel(Enum):
     """
@@ -254,60 +257,69 @@ class LearningPathways:
             ''')
 
     def create_learning_pathway(self, name: str, description: Optional[str] = None):
+        if self.get_learning_pathway(name):
+            logging.error(f"A learning pathway named '{name}' already exists.")
+            print(f"Error: A learning pathway named '{name}' already exists.")
+            return False
         try:
             with self.connection:
                 self.connection.execute(
                     'INSERT INTO pathways (name, description) VALUES (?, ?)',
                     (name, description)
                 )
-            print(f"Learning pathway '{name}' created successfully.")
+            logging.info(f"Learning pathway '{name}' created.")
             return True
         except sqlite3.IntegrityError:
             print(f"Error: A learning pathway named '{name}' already exists.")
             return False
 
-    def list_learning_pathways(self) -> List[str]:
-        with self.connection:
-            cursor = self.connection.cursor()
-            cursor.execute("SELECT name FROM pathways")
-            rows = cursor.fetchall()
-            return [row[0] for row in rows]
-
     def get_learning_pathway(self, name: str) -> Optional[LearningPathway]:
         with self.connection:
             cursor = self.connection.cursor()
-            cursor.execute("SELECT name, description FROM pathways WHERE name = ?", (name,))
+            cursor.execute('SELECT name, description FROM pathways WHERE name = ?', (name,))
             row = cursor.fetchone()
             if row:
                 return LearningPathway(name=row[0], description=row[1])
-            else:
-                return None
+            return None
 
-    def edit_learning_pathway(self, name: str, new_name: Optional[str] = None, description: Optional[str] = None):
+    def get_all_learning_pathways(self) -> List[LearningPathway]:
+        pathways = []
+        with self.connection:
+            cursor = self.connection.cursor()
+            cursor.execute('SELECT name, description FROM pathways')
+            rows = cursor.fetchall()
+            for row in rows:
+                pathways.append(LearningPathway(name=row[0], description=row[1]))
+        return pathways
+
+    def edit_learning_pathway(self, name: str, new_name: Optional[str] = None, description: Optional[str] = None) -> bool:
         pathway = self.get_learning_pathway(name)
-        if pathway:
-            if new_name:
-                # Check if new name already exists
-                if self.get_learning_pathway(new_name):
-                    print(f"Error: A learning pathway named '{new_name}' already exists.")
-                    return False
-                pathway.name = new_name
-            if description is not None:
-                pathway.description = description
+        if not pathway:
+            logging.warning(f"Attempted to edit non-existent pathway '{name}'.")
+            return False
+
+        if new_name is None:
+            new_name = pathway.name # Keep the old name if new_name is not provided
+
+        try:
             with self.connection:
                 self.connection.execute(
                     'UPDATE pathways SET name = ?, description = ? WHERE name = ?',
                     (new_name, description, name)
                 )
+            logging.info(f"Learning pathway '{name}' updated. Old name: '{name}', New name: '{new_name}'.")
             return True
-        else:
+        except sqlite3.IntegrityError: # In case new_name already exists (though primary key should prevent this)
             return False
 
     def delete_learning_pathway(self, name: str) -> bool:
         pathway = self.get_learning_pathway(name)
-        if pathway:
-            with self.connection:
-                self.connection.execute('DELETE FROM pathways WHERE name = ?', (name,))
-            return True
-        else:
+        if not pathway:
+            logging.warning(f"Attempted to delete non-existent pathway '{name}'.")
             return False
+        with self.connection:
+            cursor = self.connection.cursor()
+            cursor.execute('DELETE FROM pathways WHERE name = ?', (name,))
+            return cursor.rowcount > 0 # rowcount > 0 means something was deleted
+        logging.info(f"Learning pathway '{name}' deleted.")
+        return True
