@@ -1,0 +1,16 @@
+[project]
+authors = ["Ryan Oates <ryanfullstack@icloud.com>"]
+channels = ["https://conda.modular.com/max", "https://conda.modular.com/max-nightly", "https://repo.prefix.dev/modular-community", "conda-forge"]
+description = "Add a short description here"
+name = "microarch_lab_conversions"
+platforms = ["osx-arm64"]
+version = "0.1.0"
+
+[tasks]
+
+[dependencies]
+max = ">=24.6.0,<25"
+pip = ">=25.0,<26"
+uv = ">=0.5.24,<0.6"
+conda = ">=25.1.0,<26"
+pixi = ">=0.40.3,<0.41"
